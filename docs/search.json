@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "Homework3.html",
+    "href": "Homework3.html",
+    "title": "Homework3",
+    "section": "",
+    "text": "In this homework, I’ll be working with loops and other sorts of R programming workflows. First, we load in the provided data (which is the list from our previous HW):\n\n# load in the provided file\nload(\"hw2_list.rda\")"
+  },
+  {
+    "objectID": "Homework3.html#programming-workflows-in-r",
+    "href": "Homework3.html#programming-workflows-in-r",
+    "title": "Homework3",
+    "section": "",
+    "text": "In this homework, I’ll be working with loops and other sorts of R programming workflows. First, we load in the provided data (which is the list from our previous HW):\n\n# load in the provided file\nload(\"hw2_list.rda\")"
+  }
+]

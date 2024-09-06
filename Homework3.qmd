@@ -1,0 +1,106 @@
+---
+title: "Homework3"
+author: "Patrick Seebold"
+format: html
+editor: visual
+---
+
+## Programming Workflows in R
+
+In this homework, I'll be working with loops and other sorts of R programming workflows. First, we load in the provided data (which is the list from our previous HW):
+
+```{r}
+# load in the provided file
+load("hw2_list.rda")
+```
+
+# Task 1: Control Flow Practice
+
+First, we will create the new column in the bp_list df that will track the post-test blood pressure levels. Then we will loop through each row in the data and generate the appropriate statuses for each participant. We will do this for both the treatment and placebo - for simplicity I have done all of these steps in the following code block.
+
+```{r}
+# assign a new column to store the bp status for both the dfs
+bp_list$treatment$status = character(20)
+bp_list$placebo$status = character(10)
+
+# next, loop through the treatment group and add the appropriate status
+for (row in 1:nrow(bp_list$treatment)){ # use nrow to get the number of rows to iterate over
+  if (bp_list$treatment$post_bp[row] <= 120) {
+    bp_list$treatment$status[row] = 'optimal'
+  } else if ((bp_list$treatment$post_bp[row] > 120) & (bp_list$treatment$post_bp[row] <= 130)){
+    bp_list$treatment$status[row] = 'borderline'
+  } else {
+    bp_list$treatment$status[row] = 'high'
+  }
+}
+
+# now do the same thing for the placebo group
+for (row in 1:nrow(bp_list$placebo)){
+  if (bp_list$placebo$post_bp[row] <= 120) {
+    bp_list$placebo$status[row] = 'optimal'
+  } else if ((bp_list$placebo$post_bp[row] > 120) & (bp_list$placebo$post_bp[row] <= 130)){
+    bp_list$placebo$status[row] = 'borderline'
+  } else {
+    bp_list$placebo$status[row] = 'high'
+  }
+}
+knitr::kable(bp_list$treatment) # view the dfs to make sure that we've added the status variables correctly
+knitr::kable(bp_list$placebo)
+# Everything looks to be in order, so we can move on to the next task!
+```
+
+# Task 2: Function writing
+
+Next, we will make a function to help this process go faster in the future.
+
+Our goal is to create a function that:
+
+1.  Takes in a list with 2 data frames (treatment and placebo) as an argument, with no default value.
+2.  Also takes in an R function that finds the summary of a numeric column - set the default to 'mean'.
+3.  Finds the statistics of interest for pre, post, or difference between the two for treatment & placebo.
+4.  Returns the pre, post, and diff statistic of interest in a nicely formatted version.
+5.  Run this with the default stat, with 'var', 'sd', 'min', and 'max'
+
+```{r}
+# let's check the  type of our data before we make the function
+typeof(bp_list$treatment$pre_bp)
+typeof(bp_list$treatment$post_bp)
+typeof(bp_list$treatment$diff_bp)
+```
+
+```{r}
+# we require that the dfs in the list be called 'treatment' and 'placebo'
+calculate_statistic = function(list, stat = "mean"){
+  my_fun = get(stat)
+  post_treatment = my_fun(list$treatment$post_bp)
+  pre_treatment = my_fun(list$treatment$pre_bp)
+  diff_treatment = my_fun(list$placebo$diff_bp)
+  
+  # repeat these calculations for the placebo
+  post_placebo = my_fun(list$placebo$post_bp)
+  pre_placebo = my_fun(list$placebo$pre_bp)
+  diff_placebo = my_fun(list$placebo$diff_bp)
+  
+  return_vector = c(pre_treatment = pre_treatment,
+                     post_treatment = post_treatment,
+                     diff_treatment = diff_treatment,
+                     pre_placebo = pre_placebo,
+                     post_placebo = post_placebo,
+                     diff_placebo = diff_placebo)
+  names(return_vector) = paste(names(return_vector),stat, sep = "_")
+  return(return_vector)
+}
+```
+
+```{r}
+# Now we run the function! Here are the means, using the default stat
+calculate_statistic(bp_list)
+
+# Next we can do this for "var", "sd", "min", and "max" 
+calculate_statistic(bp_list, "var")
+calculate_statistic(bp_list, "sd")
+calculate_statistic(bp_list, "min")
+calculate_statistic(bp_list, "max")
+```
+
+That's all for this time!
